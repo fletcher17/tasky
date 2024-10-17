@@ -30,7 +30,6 @@ interface TaskApi {
 
     @POST("accessToken")
     suspend fun getAccessToken(
-        @Query("refreshToken") token: String,
-        @Query("userId") userId: String
+        @Query("refreshToken") token: String, @Query("userId") userId: String
     ): Response<UserAccessTokenResponse>
 }

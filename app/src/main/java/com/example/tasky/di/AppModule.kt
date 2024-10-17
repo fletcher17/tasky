@@ -36,11 +36,8 @@ object NetWorkModule {
     @Provides
     @Singleton
     fun provideHttpClient(interceptor: Interceptor): OkHttpClient {
-        return OkHttpClient.Builder()
-            .readTimeout(0, TimeUnit.MINUTES)
-            .connectTimeout(0, TimeUnit.MINUTES)
-            .addInterceptor(interceptor)
-            .build()
+        return OkHttpClient.Builder().readTimeout(0, TimeUnit.MINUTES)
+            .connectTimeout(0, TimeUnit.MINUTES).addInterceptor(interceptor).build()
     }
 
     @Provides
@@ -52,14 +49,10 @@ object NetWorkModule {
     @Provides
     @Singleton
     fun provideRetrofitInstance(
-        okHttpClient: OkHttpClient,
-        gsonConverterFactory: GsonConverterFactory
+        okHttpClient: OkHttpClient, gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(gsonConverterFactory)
-            .build()
+        return Retrofit.Builder().baseUrl(BASE_URL).client(okHttpClient)
+            .addConverterFactory(gsonConverterFactory).build()
     }
 
     @Provides
