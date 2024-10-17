@@ -66,7 +66,7 @@ class LogInFragment : Fragment() {
                     }
                     is AuthResult.Authorized -> {
                         progressDialog.dismiss()
-                        findNavController().navigate(R.id.homeFragment)
+                        findNavController().navigate(LogInFragmentDirections.actionLogInFragmentToHomeFragment())
                     }
                     is AuthResult.Unauthorized -> {
                         progressDialog.dismiss()

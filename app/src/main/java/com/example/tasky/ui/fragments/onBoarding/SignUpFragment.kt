@@ -48,8 +48,10 @@ class SignUpFragment : Fragment() {
             val isPop = findNavController().popBackStack()
             Log.d("backstack", "$isPop")
             if (!isPop) {
+                Log.d("backstack false", "$isPop")
                 requireActivity().finish()
             } else {
+                Log.d("backstack true", "$isPop")
                 findNavController().navigateUp()
             }
         }
