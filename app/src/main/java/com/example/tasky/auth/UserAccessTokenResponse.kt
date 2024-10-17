@@ -1,6 +1,5 @@
 package com.example.tasky.auth
 
-
 import com.google.gson.annotations.SerializedName
 
 data class UserAccessTokenResponse(
