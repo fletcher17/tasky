@@ -36,8 +36,7 @@ object NetWorkModule {
     @Provides
     @Singleton
     fun provideHttpClient(interceptor: Interceptor): OkHttpClient {
-        return OkHttpClient.Builder().readTimeout(0, TimeUnit.MINUTES)
-            .connectTimeout(0, TimeUnit.MINUTES).addInterceptor(interceptor).build()
+        return OkHttpClient.Builder().addInterceptor(interceptor).build()
     }
 
     @Provides
