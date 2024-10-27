@@ -24,15 +24,15 @@ class MainViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
 
-    private var authResponseChannel = Channel<AuthResult<Unit>>()
+    private var authResponseChannel = Channel<NetworkResult<Unit>>()
     val authResults = authResponseChannel.receiveAsFlow()
 
-    private var loginAuthResponse = Channel<AuthResult<Unit>>()
+    private var loginAuthResponse = Channel<NetworkResult<UserSignInResponse>>()
     val loginAuthResults = loginAuthResponse.receiveAsFlow()
 
     fun signUp(name: String, email:String, password: String) {
         viewModelScope.launch {
-            authResponseChannel.send(AuthResult.Loading())
+            authResponseChannel.send(NetworkResult.Loading())
             val result = repository.signUp(name, email, password)
             authResponseChannel.send(result)
         }
@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
 
     fun signIn(email:String, password: String) {
         viewModelScope.launch {
-            loginAuthResponse.send(AuthResult.Loading())
+            loginAuthResponse.send(NetworkResult.Loading())
             val result = repository.login(email, password)
             loginAuthResponse.send(result)
         }

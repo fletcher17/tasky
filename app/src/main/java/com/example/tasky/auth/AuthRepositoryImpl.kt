@@ -3,36 +3,42 @@ package com.example.tasky.auth
 import android.util.Log
 import com.example.tasky.data.DataStoreRepository
 import com.example.tasky.network.TaskApi
+import com.example.tasky.util.NetworkResult
 import kotlinx.coroutines.flow.first
 import retrofit2.HttpException
 
-class AuthRepositoryImpl (
+class AuthRepositoryImpl(
     private val api: TaskApi,
     private val dataStoreRepository: DataStoreRepository
 ) : AuthRepository {
-    override suspend fun signUp(name: String, email: String, password: String): AuthResult<Unit> {
-       return try {
+    override suspend fun signUp(
+        name: String,
+        email: String,
+        password: String
+    ): NetworkResult<Unit> {
+
+        return try {
             api.signUp(
                 AuthSignUpRequest(
                     name, email, password
                 )
             )
-           login(email, password)
-           AuthResult.Authorized()
+            login(email, password)
+            NetworkResult.Success()
         } catch (e: HttpException) {
             if (e.code() == 401) {
-            AuthResult.Unauthorized()
+                NetworkResult.Error(e.message.toString())
             } else if (e.code() == 409) {
-                AuthResult.Unauthorized()
+                NetworkResult.Error(e.message.toString())
             } else {
-            AuthResult.UnKnownError()
+                NetworkResult.Error(e.message.toString())
             }
         } catch (e: Exception) {
-            AuthResult.UnKnownError()
+            NetworkResult.Error(e.message.toString())
         }
     }
 
-    override suspend fun login(email: String, password: String): AuthResult<Unit> {
+    override suspend fun login(email: String, password: String): NetworkResult<UserSignInResponse> {
         return try {
             val response = api.logIn(
                 UserSignInRequest(
@@ -49,16 +55,23 @@ class AuthRepositoryImpl (
                     userData.userId
                 )
             }
-            Log.d("response", "${response} and ${response.body()} and ${response.message()} and code ${response.code()}")
-            AuthResult.Authorized()
+            Log.d(
+                "response",
+                "${response} and ${response.body()} and ${response.message()} and code ${response.code()}"
+            )
+            NetworkResult.Success(response.body()!!)
         } catch (e: HttpException) {
             if (e.code() == 401) {
-                AuthResult.Unauthorized()
+                Log.d(
+                    "response error 401",
+                    " and ${e.message()} and code ${e.code()}"
+                )
+                NetworkResult.Error(e.message.toString())
             } else {
-                AuthResult.UnKnownError()
+                NetworkResult.Error(e.message.toString())
             }
         } catch (e: Exception) {
-            AuthResult.UnKnownError()
+            NetworkResult.Error(e.message.toString())
         }
     }
 

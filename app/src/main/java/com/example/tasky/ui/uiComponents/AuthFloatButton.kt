@@ -13,5 +13,6 @@ class AuthFloatButton @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-    private val binding = AuthFloatButtonLayoutBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding =
+        AuthFloatButtonLayoutBinding.inflate(LayoutInflater.from(context), this, true)
 }
