@@ -11,16 +11,20 @@ class AuthRepositoryImpl(
     private val api: TaskApi,
     private val dataStoreRepository: DataStoreRepository
 ) : AuthRepository {
-    override suspend fun signUp(name: String, email: String, password: String): NetworkResult<UserSignInResponse> {
+    override suspend fun signUp(
+        name: String,
+        email: String,
+        password: String
+    ): NetworkResult<Unit> {
 
-     return try {
+        return try {
             api.signUp(
                 AuthSignUpRequest(
                     name, email, password
                 )
             )
-            val log = login(email, password)
-            NetworkResult.Success(log)
+            login(email, password)
+            NetworkResult.Success()
         } catch (e: HttpException) {
             if (e.code() == 401) {
                 NetworkResult.Error(e.message.toString())
@@ -58,6 +62,10 @@ class AuthRepositoryImpl(
             NetworkResult.Success(response.body()!!)
         } catch (e: HttpException) {
             if (e.code() == 401) {
+                Log.d(
+                    "response error 401",
+                    " and ${e.message()} and code ${e.code()}"
+                )
                 NetworkResult.Error(e.message.toString())
             } else {
                 NetworkResult.Error(e.message.toString())

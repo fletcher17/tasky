@@ -28,6 +28,7 @@ import com.example.tasky.util.ExtensionFunctionsConstants.nameAddTextChange
 import com.example.tasky.util.NetworkResult
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -35,8 +36,8 @@ class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
 
-    //    private val viewModel by viewModels<MainViewModel>()
-    private val viewModel by viewModels<OnBoardingViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
+//    private val viewModel by viewModels<OnBoardingViewModel>()
 
     private lateinit var processDialog: Dialog
 
@@ -70,11 +71,11 @@ class SignUpFragment : Fragment() {
         binding.emailEditText.emailAddTextChange()
 
         lifecycleScope.launch {
-            viewModel.loginResponse.observe(viewLifecycleOwner) { result ->
+            viewModel.authResults.collect { result ->
                 when(result) {
                     is NetworkResult.Success -> {
                         processDialog.dismiss()
-                        findNavController().navigate(R.id.homeFragment)
+                        findNavController().navigate(SignUpFragmentDirections.actionSignUpFragmentToHomeFragment())
                     }
                     is NetworkResult.Error -> {
                         processDialog.dismiss()
@@ -85,13 +86,8 @@ class SignUpFragment : Fragment() {
                         processDialog.show()
                     }
                 }
-
             }
         }
-
-
-
-
         return binding.root
     }
 
@@ -121,11 +117,9 @@ class SignUpFragment : Fragment() {
             }
 
             viewModel.signUp(
-                AuthSignUpRequest(
                     binding.nameEditText.text.toString(),
                     binding.emailEditText.text.toString(),
                     binding.passwordEditText.text.toString()
-                )
             )
 
         }

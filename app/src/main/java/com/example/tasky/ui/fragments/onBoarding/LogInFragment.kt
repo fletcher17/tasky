@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.tasky.MainViewModel
 import com.example.tasky.R
 import com.example.tasky.databinding.FragmentLogInBinding
 import com.example.tasky.util.Constants.Companion.getProgressDialog
@@ -28,8 +29,8 @@ class LogInFragment : Fragment() {
     private var _binding: FragmentLogInBinding? = null
     private val binding get() = _binding!!
 
-//    private val viewModel by viewModels<MainViewModel>()
-    private val viewModel by viewModels<OnBoardingViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
+//    private val viewModel by viewModels<OnBoardingViewModel>()
 
     private lateinit var progressDialog: Dialog
 
@@ -54,9 +55,12 @@ class LogInFragment : Fragment() {
         loginOnClickListener()
 
         lifecycleScope.launch {
-            viewModel.loginResponse.observe(viewLifecycleOwner) { result ->
-                Log.d("login fragment", "${result.data} and ${result}")
+            viewModel.loginAuthResults.collect { result ->
+                Log.d("login fragment", "${result.data} and $result")
                 when(result) {
+                    is NetworkResult.Loading -> {
+                        progressDialog.show()
+                    }
                     is NetworkResult.Success -> {
                         progressDialog.dismiss()
                         findNavController().navigate(LogInFragmentDirections.actionLogInFragmentToHomeFragment())
@@ -65,12 +69,27 @@ class LogInFragment : Fragment() {
                         progressDialog.dismiss()
                         Snackbar.make(binding.root, result.message.toString(), Snackbar.LENGTH_LONG).show()
                     }
-                    is NetworkResult.Loading -> {
-                        progressDialog.show()
-                    }
                 }
             }
         }
+//        lifecycleScope.launch {
+//            viewModel.loginResponse.observe(viewLifecycleOwner) { result ->
+//                Log.d("login fragment", "${result.data} and ${result}")
+//                when(result) {
+//                    is NetworkResult.Success -> {
+//                        progressDialog.dismiss()
+//                        findNavController().navigate(LogInFragmentDirections.actionLogInFragmentToHomeFragment())
+//                    }
+//                    is NetworkResult.Error -> {
+//                        progressDialog.dismiss()
+//                        Snackbar.make(binding.root, result.message.toString(), Snackbar.LENGTH_LONG).show()
+//                    }
+//                    is NetworkResult.Loading -> {
+//                        progressDialog.show()
+//                    }
+//                }
+//            }
+//        }
 
     }
 
@@ -92,8 +111,11 @@ class LogInFragment : Fragment() {
             }
 
             Log.d("login valid", binding.emailEditText.text.toString())
+            viewModel.signIn(
+                binding.emailEditText.text.toString(), binding.passwordEditText.text.toString()
+            )
 
-            viewModel.login(binding.emailEditText.text.toString(), binding.passwordEditText.text.toString())
+//            viewModel.login(binding.emailEditText.text.toString(), binding.passwordEditText.text.toString())
 
 
         }
